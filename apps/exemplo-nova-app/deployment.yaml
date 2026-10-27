@@ -1,4 +1,4 @@
-# Modelo de deploy para qualquer nova aplicação no cluster usando o domínio coringa
+# Modelo de deploy para novas aplicações no cluster com subdomínio individual e SSL automático
 apiVersion: apps/v1
 kind: Deployment
 metadata:

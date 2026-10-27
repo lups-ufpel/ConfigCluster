@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: webterminal
+  name: terminal-web
   labels:
-    name: webterminal
+    name: terminal-web
 ---
 apiVersion: v1
 kind: Namespace

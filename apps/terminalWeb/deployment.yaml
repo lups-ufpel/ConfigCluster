@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: terminal-web-backend
-  namespace: webterminal
+  namespace: terminal-web
 spec:
   replicas: 1
   selector:
@@ -39,7 +39,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: terminal-web-service
-  namespace: webterminal
+  namespace: terminal-web
 spec:
   type: ClusterIP
   selector:
@@ -53,7 +53,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: terminal-web-ingress
-  namespace: webterminal
+  namespace: terminal-web
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"

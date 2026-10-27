@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: mpi-pods-isolation-policy
-  namespace: webterminal
+  namespace: terminal-web
 spec:
   podSelector:
     matchLabels:

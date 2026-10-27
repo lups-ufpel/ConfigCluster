@@ -1,0 +1,58 @@
+# Quotas e LimitRanges aplicados EXCLUSIVAMENTE às aplicações convidadas (guest apps).
+# O namespace 'terminal-web' (terminalWeb) NÃO possui ResourceQuota para permitir
+# elasticidade irrestrita e Cloud Bursting (BRYOC).
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: guest-quota
+  namespace: anatox
+spec:
+  hard:
+    requests.cpu: "2"
+    requests.memory: 4Gi
+    limits.cpu: "4"
+    limits.memory: 8Gi
+    pods: "10"
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: guest-limit-range
+  namespace: anatox
+spec:
+  limits:
+  - default:
+      cpu: "1"
+      memory: "1Gi"
+    defaultRequest:
+      cpu: "100m"
+      memory: "128Mi"
+    type: Container
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: guest-quota
+  namespace: app-exemplo
+spec:
+  hard:
+    requests.cpu: "2"
+    requests.memory: 4Gi
+    limits.cpu: "4"
+    limits.memory: 8Gi
+    pods: "10"
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: guest-limit-range
+  namespace: app-exemplo
+spec:
+  limits:
+  - default:
+      cpu: "1"
+      memory: "1Gi"
+    defaultRequest:
+      cpu: "100m"
+      memory: "128Mi"
+    type: Container
