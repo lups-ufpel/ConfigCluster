@@ -9,6 +9,7 @@ Este repositório centraliza as configurações de infraestrutura, segurança, r
 ```text
 configCluster/
 ├── README.md
+├── deploy.sh                          # Script de deploy automatizado do cluster
 ├── base/                              # Recursos globais e de infraestrutura
 │   ├── cluster-issuer.yaml            # Cert-Manager (Let's Encrypt SSL)
 │   ├── namespaces.yaml                # Criação e isolamento dos namespaces
@@ -53,9 +54,7 @@ O `ClusterIssuer` configurado em `base/cluster-issuer.yaml` usa o método `http0
 
 ---
 
-## 📦 3. Passo a Passo de Execução no MicroK8s
-
-Execute estes comandos no servidor do cluster MicroK8s:
+## 📦 3. Execução e Deploy no MicroK8s
 
 ### Passo 3.1: Habilitar os Addons necessários (se ainda não fez)
 ```bash
@@ -65,7 +64,26 @@ microk8s enable cert-manager
 microk8s enable registry
 ```
 
-### Passo 3.2: Aplicar as configurações base do cluster
+### ⚡ Opção A: Deploy Automático com `deploy.sh` (Recomendado)
+O repositório inclui o script [`deploy.sh`](file:///home/pedro/ConfigCluster/deploy.sh), que aplica a base e varre a pasta `apps/` de forma ordenada (ignorando pastas de templates como `exemplo-*`):
+
+```bash
+# Aplica a infraestrutura base e todas as aplicações em apps/:
+./deploy.sh
+
+# Ou aplica a base e apenas uma aplicação específica:
+./deploy.sh terminalWeb
+
+# Verifica o status consolidado de pods, namespaces e ingresses:
+./deploy.sh --status
+```
+
+---
+
+### 🛠️ Opção B: Passo a Passo Manual
+Caso prefira executar cada manifesto individualmente:
+
+#### Passo 3.2: Aplicar as configurações base do cluster
 ```bash
 # Cria os namespaces isolados (terminal-web, anatox, app-exemplo, etc.):
 microk8s kubectl apply -f base/namespaces.yaml

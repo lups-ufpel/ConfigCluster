@@ -12,10 +12,10 @@ spec:
   ingressClassName: public
   tls:
   - hosts:
-    - anatox.clusterlups.inf.ufpel.edu.br
+    - anatox.inf.ufpel.edu.br
     secretName: anatox-tls
   rules:
-  - host: anatox.clusterlups.inf.ufpel.edu.br
+  - host: anatox.inf.ufpel.edu.br
     http:
       paths:
       # Rota para a API do Anatox
