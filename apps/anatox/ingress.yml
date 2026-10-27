@@ -1,0 +1,36 @@
+# Ingress correto para o Anatox usando o domínio coringa com SSL
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: anatox-ingress
+  namespace: anatox
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "30m"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: public
+  tls:
+  - hosts:
+    - anatox.clusterlups.inf.ufpel.edu.br
+    secretName: anatox-tls
+  rules:
+  - host: anatox.clusterlups.inf.ufpel.edu.br
+    http:
+      paths:
+      # Rota para a API do Anatox
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: anatox-api-service
+            port:
+              number: 80
+      # Rota para o Front-end do Anatox
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: anatox-front-service
+            port:
+              number: 80

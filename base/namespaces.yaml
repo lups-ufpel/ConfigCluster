@@ -1,0 +1,22 @@
+# Criação dos namespaces para isolar cada aplicação no cluster MicroK8s
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: webterminal
+  labels:
+    name: webterminal
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app-exemplo
+  labels:
+    name: app-exemplo
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: anatox
+  labels:
+    name: anatox
+

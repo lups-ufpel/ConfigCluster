@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terminal-web-backend
+  namespace: webterminal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: terminal-web-backend
+  template:
+    metadata:
+      labels:
+        app: terminal-web-backend
+    spec:
+      serviceAccountName: terminal-backend-sa
+      containers:
+        - name: backend
+          image: localhost:32000/terminal-web-backend:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: K8S_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          envFrom:
+            - secretRef:
+                name: terminal-web-secrets
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: terminal-web-service
+  namespace: webterminal
+spec:
+  type: ClusterIP
+  selector:
+    app: terminal-web-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: terminal-web-ingress
+  namespace: webterminal
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # Configurações essenciais para WebSockets (sessão do terminal interativo):
+    nginx.ingress.kubernetes.io/websocket-services: "terminal-web-service"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: public
+  tls:
+  - hosts:
+    # URL principal do Terminal:
+    - clusterlups.inf.ufpel.edu.br
+    secretName: terminal-web-tls
+  rules:
+  # O Terminal atende no domínio principal:
+  - host: clusterlups.inf.ufpel.edu.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: terminal-web-service
+            port:
+              number: 80

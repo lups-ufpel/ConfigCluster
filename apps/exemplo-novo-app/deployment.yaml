@@ -1,0 +1,70 @@
+# Modelo de deploy para qualquer nova aplicação no cluster usando o domínio coringa
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-exemplo-backend
+  namespace: app-exemplo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-exemplo
+  template:
+    metadata:
+      labels:
+        app: app-exemplo
+    spec:
+      containers:
+        - name: app
+          image: nginxdemos/hello:plain-text # Substitua pela imagem da sua aplicação
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-exemplo-service
+  namespace: app-exemplo
+spec:
+  type: ClusterIP
+  selector:
+    app: app-exemplo
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-exemplo-ingress
+  namespace: app-exemplo
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: public
+  tls:
+  - hosts:
+    # Escolha o subdomínio da nova aplicação:
+    - app2.clusterlups.inf.ufpel.edu.br
+    secretName: app-exemplo-tls
+  rules:
+  - host: app2.clusterlups.inf.ufpel.edu.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app-exemplo-service
+            port:
+              number: 80
